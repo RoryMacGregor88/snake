@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 
+import { GameOverDialog, LeaderBoard, StatsPanel } from './components';
+
 import {
   calculateAvailableFood,
   createGrid,
@@ -18,16 +20,28 @@ import {
 import { Coords, Food } from './types';
 
 import './sass/snake.scss';
-import { GameOverDialog, LeaderBoard } from './components';
+
+/** Mocked for now, will be real data soon */
+const highScores = [
+  'Big Roro',
+  'JumboHaggis',
+  'Big G',
+  'BillyBigBaws',
+  'Rando88',
+].map((username, i) => ({
+  username,
+  score: i * 6,
+  date: '21/07/2023',
+}));
 
 function Snake() {
   const [hasStarted, setHasStarted] = useState(false);
   const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
+  const [hasLost, setHasLost] = useState(false);
 
   const boxes = useMemo(() => createGrid(), []);
-
   const getRandomFood = () => calculateAvailableFood(boxes, snakeCoords);
 
   const [food, setFood] = useState<Food>(() => ({
@@ -35,13 +49,10 @@ function Snake() {
     prevFood: [0, 0],
   }));
 
-  const [hasLost, setHasLost] = useState(false);
-
-  const score = snakeCoords.length - 1,
-    metersPerSecond = 1000 / currentSpeed,
-    formattedSpeed = Number.isInteger(metersPerSecond)
-      ? metersPerSecond
-      : metersPerSecond.toFixed(2);
+  const currentHighScore = highScores.reduce(
+    (acc, { score }) => (score > acc ? score : acc),
+    0
+  );
 
   const handleHasLost = () => {
     setHasLost(true);
@@ -203,19 +214,6 @@ function Snake() {
     );
   };
 
-  /** Mocked for now, will be real data soon */
-  const highScores = [
-    'Big Roro',
-    'Jumbo Haggis',
-    'Big G',
-    'Squirt69',
-    'Rando88',
-  ].map((username, i) => ({
-    username,
-    score: i * 6,
-    date: '21/07/2023',
-  }));
-
   return (
     <div className='app-container'>
       <div className='header'>
@@ -228,25 +226,19 @@ function Snake() {
 
         <div className='grid'>{boxes.map(renderBoxes)}</div>
 
-        {hasLost ? <GameOverDialog score={score} onClick={reset} /> : null}
+        {hasLost ? (
+          <GameOverDialog
+            score={100}
+            onResetClick={reset}
+            currentHighScore={currentHighScore}
+          />
+        ) : null}
 
-        <div className='side-box'>
-          <h1>Your score: {score}</h1>
-          {currentSpeed == MAX_SPEED ? (
-            <div className='flash maximum-speed'>
-              <span>🔥</span>
-              <h2>MAXIMUM SPEED</h2>
-              <span>🔥</span>
-            </div>
-          ) : (
-            <h2>Speed: {formattedSpeed} m/s</h2>
-          )}
-          <div className='button-container'>
-            <button className='eightbit-btn' onClick={reset}>
-              Reset
-            </button>
-          </div>
-        </div>
+        <StatsPanel
+          score={snakeCoords.length - 1}
+          currentSpeed={currentSpeed}
+          reset={reset}
+        />
       </div>
 
       {!hasStarted ? (

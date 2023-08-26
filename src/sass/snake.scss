@@ -44,6 +44,8 @@
 }
 
 .button-container {
+  display: flex;
+  gap: 1rem;
   margin: 0.25rem;
 }
 
@@ -77,6 +79,27 @@
   border-radius: 3px;
   border: 6px solid $white;
   width: 30rem;
+}
+
+.high-score-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+
+  input {
+    padding: 2rem;
+    border-radius: 5px;
+    font-family: '8BIT WONDER', sans-serif;
+    background-color: $black;
+    color: $white;
+    font-size: 1.5rem;
+    text-align: center;
+    border: none;
+    width: calc(100% - 4rem);
+  }
 }
 
 .image {
@@ -167,6 +190,10 @@
     display: table;
     border-collapse: separate;
     border-spacing: 1rem 0;
+
+    td {
+      text-align: center;
+    }
   }
 }
 
@@ -186,6 +213,9 @@
   from {
     opacity: 1;
   }
+  60% {
+    opacity: 1;
+  }
   to {
     opacity: 0;
   }
@@ -194,6 +224,5 @@
 .flash {
   -webkit-animation-name: blinker;
   -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
-  -webkit-animation-duration: 0.5s;
+  -webkit-animation-duration: 0.75s;
 }
