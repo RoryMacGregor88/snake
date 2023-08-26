@@ -5,8 +5,8 @@ export interface Food {
   prevFood: Coords;
 }
 
-export interface HighScore {
-  username: string;
+export interface LeaderboardScore {
+  name: string;
   score: number;
   date: string;
 }

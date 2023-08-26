@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 
+import { format } from 'date-fns';
+
 import { GameOverDialog, LeaderBoard, StatsPanel } from './components';
 
 import {
@@ -15,21 +17,22 @@ import {
   MAX_SPEED,
   REDUCTION_SPEED,
   INITIAL_COORDS,
+  OPPOSITE_KEYS,
 } from './constants';
 
-import { Coords, Food } from './types';
+import { Coords, Food, LeaderboardScore } from './types';
 
 import './sass/snake.scss';
 
 /** Mocked for now, will be real data soon */
-const highScores = [
+const INITIAL_HIGH_SCORES = [
   'Big Roro',
   'JumboHaggis',
   'Big G',
   'BillyBigBaws',
   'Rando88',
-].map((username, i) => ({
-  username,
+].map((name, i) => ({
+  name,
   score: i * 6,
   date: '21/07/2023',
 }));
@@ -39,6 +42,10 @@ function Snake() {
   const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
+
+  const [leaderboardScores, setLeaderboardScores] =
+    useState<LeaderboardScore[]>(INITIAL_HIGH_SCORES);
+
   const [hasLost, setHasLost] = useState(false);
 
   const boxes = useMemo(() => createGrid(), []);
@@ -49,15 +56,25 @@ function Snake() {
     prevFood: [0, 0],
   }));
 
-  const currentHighScore = highScores.reduce(
+  const currentHighScore = leaderboardScores.reduce(
     (acc, { score }) => (score > acc ? score : acc),
     0
   );
+
+  const score = snakeCoords.length - 1;
 
   const handleHasLost = () => {
     setHasLost(true);
     /** Prevent further movement of snake */
     window.removeEventListener('keydown', updateDirection);
+  };
+
+  const handleSaveHighScore = (playerData: { name: string; score: number }) => {
+    const today = new Date(),
+      date = format(today, 'dd/LL/uuuu');
+
+    const newHighScore = { ...playerData, date };
+    setLeaderboardScores((prev) => [newHighScore, ...prev]);
   };
 
   const checkIsEating = ({ nextCoords }: { nextCoords: Coords }) => {
@@ -119,9 +136,6 @@ function Snake() {
   };
 
   const moveSnake = ({ key }: { key: string }) => {
-    /** Prevent non-directional keys */
-    if (!DIRECTION_KEYS[key]) return;
-
     if (currentDirection !== key) setCurrentDirection(key);
     setSnakeCoords((prevCoords) => getNextCoords({ prevCoords, key }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,6 +144,9 @@ function Snake() {
   const updateDirection = ({ key }: { key: string }) => {
     /** Prevent non-directional keys */
     if (!DIRECTION_KEYS[key]) return;
+
+    /** Prevent 180 degree turn */
+    if (key === OPPOSITE_KEYS[currentDirection]) return;
 
     /** Start game if not already */
     if (!hasStarted) setHasStarted(true);
@@ -150,13 +167,10 @@ function Snake() {
 
   const reset = () => {
     setSnakeCoords(INITIAL_COORDS);
-    setCurrentDirection('');
     setCurrentSpeed(INITIAL_SPEED);
     setHasStarted(false);
-    setFood({
-      currentFood: getRandomFood(),
-      prevFood: [0, 0],
-    });
+    setCurrentDirection('');
+    setFood({ currentFood: getRandomFood(), prevFood: [0, 0] });
 
     if (hasLost) {
       setHasLost(false);
@@ -175,7 +189,7 @@ function Snake() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snakeCoords, hasStarted, hasLost]);
 
-  /** Creates grid */
+  /** Create grid */
   const renderBoxes = ([lat, lon]: Coords) => {
     const match = snakeCoords.find(
       ([matchLat, matchLon]) => matchLat === lat && matchLon === lon
@@ -222,23 +236,20 @@ function Snake() {
       </div>
 
       <div className='grid-container'>
-        <LeaderBoard highScores={highScores} />
+        <LeaderBoard leaderboardScores={leaderboardScores} />
 
         <div className='grid'>{boxes.map(renderBoxes)}</div>
 
-        {hasLost ? (
+        {!hasLost ? (
           <GameOverDialog
             score={100}
             onResetClick={reset}
             currentHighScore={currentHighScore}
+            handleSaveHighScore={(name) => handleSaveHighScore({ name, score })}
           />
         ) : null}
 
-        <StatsPanel
-          score={snakeCoords.length - 1}
-          currentSpeed={currentSpeed}
-          reset={reset}
-        />
+        <StatsPanel score={score} currentSpeed={currentSpeed} reset={reset} />
       </div>
 
       {!hasStarted ? (

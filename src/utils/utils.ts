@@ -41,14 +41,6 @@ const calculateNextCoords = ({
 }: CalculateNextCoordsArgs): Coords => {
   const [headLat, headLon] = head;
 
-  //TODO: cannot go back
-  // const oppositeKeys = {
-  //   ArrowLeft: 'ArrowRight',
-  //   ArrowUp: 'ArrowDown',
-  //   ArrowRight: 'ArrowLeft',
-  //   ArrowDown: 'ArrowUp',
-  // };
-
   let nextCoords: Coords = [0, 0];
 
   /** Allows wrapping upon hitting walls */

@@ -16,14 +16,14 @@ describe('Leaderboard', () => {
   it('should display leaderboard if high scores present', () => {
     render(<LeaderBoard highScores={TEST_HIGH_SCORES} />);
     expect(
-      screen.getByRole('header', { name: 'Username-1' })
+      screen.getByRole('heading', { name: 'Username-1' })
     ).toBeInTheDocument();
   });
 
   it('should render loading message if high scores not present', () => {
     render(<LeaderBoard highScores={undefined} />);
     expect(
-      screen.getByRole('header', { name: LOADING_LEADERBOARD_MESSAGE })
+      screen.getByRole('heading', { name: LOADING_LEADERBOARD_MESSAGE })
     ).toBeInTheDocument();
   });
 });

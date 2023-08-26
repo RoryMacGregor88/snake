@@ -45,6 +45,8 @@
 
 .button-container {
   display: flex;
+  justify-content: space-evenly;
+  width: 100%;
   gap: 1rem;
   margin: 0.25rem;
 }
@@ -164,9 +166,9 @@
 .side-box {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   align-items: center;
-  height: 35vh;
+  gap: 2rem;
   width: 30%;
 }
 
@@ -179,7 +181,6 @@
 
   h1 {
     margin-bottom: 1rem;
-    text-decoration: underline;
   }
 
   h2 {

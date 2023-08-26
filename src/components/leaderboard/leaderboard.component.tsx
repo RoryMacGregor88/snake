@@ -1,13 +1,13 @@
 import { LOADING_LEADERBOARD_MESSAGE } from '../../constants';
-import { HighScore } from '../../types';
+import { LeaderboardScore } from '../../types';
 
 const tableHeaders = ['Username', 'Score', 'Date'];
 
 interface Props {
-  highScores?: HighScore[];
+  leaderboardScores?: LeaderboardScore[];
 }
 
-const LeaderBoard = ({ highScores }: Props) => (
+const LeaderBoard = ({ leaderboardScores }: Props) => (
   <div className='side-box'>
     <div className='high-scores'>
       <h1>High Scores</h1>
@@ -16,17 +16,17 @@ const LeaderBoard = ({ highScores }: Props) => (
         <thead>
           <tr>
             {tableHeaders.map((header) => (
-              <td>{header}</td>
+              <td key={header}>{header}</td>
             ))}
           </tr>
         </thead>
 
         <tbody>
-          {highScores ? (
-            highScores.map(({ username, score, date }) => (
-              <tr>
+          {!!leaderboardScores ? (
+            leaderboardScores.map(({ name, score, date }) => (
+              <tr key={name}>
                 <td>
-                  <h2>{username}</h2>
+                  <h2>{name}</h2>
                 </td>
                 <td>
                   <h2>{score}</h2>

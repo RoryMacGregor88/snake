@@ -17,3 +17,12 @@ export const REDUCTION_SPEED = 10;
 export const MAX_SPEED = 150;
 
 export const LOADING_LEADERBOARD_MESSAGE = 'Loading leaderboard...';
+
+export const OPPOSITE_KEYS: { [key: string]: string } = {
+  ArrowLeft: 'ArrowRight',
+  ArrowUp: 'ArrowDown',
+  ArrowRight: 'ArrowLeft',
+  ArrowDown: 'ArrowUp',
+};
+
+export const MAX_NAME_LENGTH = 12;

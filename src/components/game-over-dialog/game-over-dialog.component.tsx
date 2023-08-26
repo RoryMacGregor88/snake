@@ -5,18 +5,22 @@ interface Props {
   score: number;
   currentHighScore: number;
   onResetClick: () => void;
+  handleSaveHighScore: (name: string) => void;
 }
 
 // TODO: more tests
-const GameOverDialog = ({ score, currentHighScore, onResetClick }: Props) => {
+const GameOverDialog = ({
+  score,
+  currentHighScore,
+  onResetClick,
+  handleSaveHighScore,
+}: Props) => {
   const [showHighScoreForm, setShowHighScoreForm] = useState(false);
 
-  const handleSubmit = (values) => {
-    console.log('VALUES: ', values);
-  };
+  const handleSubmit = (name: string) => handleSaveHighScore(name);
 
   const isHighScore = score > currentHighScore,
-    message = isHighScore ? `New High Score: ${score}` : `Your score: ${score}`;
+    message = isHighScore ? `New High Score: ${score}` : `Your Score: ${score}`;
   return (
     <div className='lose-container'>
       <div className='lose-popup'>
