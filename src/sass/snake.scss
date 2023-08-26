@@ -156,10 +156,17 @@
 
   h1 {
     margin-bottom: 1rem;
+    text-decoration: underline;
   }
 
   h2 {
     font-size: 1rem;
+  }
+
+  table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 1rem 0;
   }
 }
 

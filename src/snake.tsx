@@ -18,6 +18,7 @@ import {
 import { Coords, Food } from './types';
 
 import './sass/snake.scss';
+import { GameOverDialog, LeaderBoard } from './components';
 
 function Snake() {
   const [hasStarted, setHasStarted] = useState(false);
@@ -202,6 +203,7 @@ function Snake() {
     );
   };
 
+  /** Mocked for now, will be real data soon */
   const highScores = [
     'Big Roro',
     'Jumbo Haggis',
@@ -222,35 +224,11 @@ function Snake() {
       </div>
 
       <div className='grid-container'>
-        <div className='side-box'>
-          <div className='high-scores'>
-            <h1>High Scores</h1>
-            {highScores.map(({ username, score, date }) => (
-              <div>
-                <h2>
-                  {username} | {score} | {date}
-                </h2>
-              </div>
-            ))}
-          </div>
-        </div>
+        <LeaderBoard highScores={highScores} />
 
         <div className='grid'>{boxes.map(renderBoxes)}</div>
 
-        {hasLost ? (
-          <div className='lose-container'>
-            <div className='lose-popup'>
-              <h1>GAME OVER!</h1>
-              <h2 className='flash'>Your Score: {score}</h2>
-              <button
-                className='eightbit-btn eightbit-btn--reset'
-                onClick={reset}
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        ) : null}
+        {hasLost ? <GameOverDialog score={score} onClick={reset} /> : null}
 
         <div className='side-box'>
           <h1>Your score: {score}</h1>
