@@ -17,7 +17,7 @@ import {
 
 import { Coords, Food } from './types';
 
-import './App.css';
+import './sass/snake.scss';
 
 function Snake() {
   const [hasStarted, setHasStarted] = useState(false);
@@ -35,6 +35,12 @@ function Snake() {
   }));
 
   const [hasLost, setHasLost] = useState(false);
+
+  const score = snakeCoords.length - 1,
+    metersPerSecond = 1000 / currentSpeed,
+    formattedSpeed = Number.isInteger(metersPerSecond)
+      ? metersPerSecond
+      : metersPerSecond.toFixed(2);
 
   const handleHasLost = () => {
     setHasLost(true);
@@ -133,6 +139,8 @@ function Snake() {
   const reset = () => {
     setSnakeCoords(INITIAL_COORDS);
     setCurrentDirection('');
+    setCurrentSpeed(INITIAL_SPEED);
+    setHasStarted(false);
     setFood({
       currentFood: getRandomFood(),
       prevFood: [0, 0],
@@ -155,6 +163,7 @@ function Snake() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snakeCoords, hasStarted, hasLost]);
 
+  /** Creates grid */
   const renderBoxes = ([lat, lon]: Coords) => {
     const match = snakeCoords.find(
       ([matchLat, matchLon]) => matchLat === lat && matchLon === lon
@@ -193,20 +202,36 @@ function Snake() {
     );
   };
 
+  const highScores = [
+    'Big Roro',
+    'Jumbo Haggis',
+    'Big G',
+    'Squirt69',
+    'Rando88',
+  ].map((username, i) => ({
+    username,
+    score: i * 6,
+    date: '21/07/2023',
+  }));
+
   return (
     <div className='app-container'>
-      <>
+      <div className='header'>
         <h1>Snake!</h1>
-        <span>Press an arrow key to begin</span>
-        <span>Be careful...he gets faster every time he eats!</span>
-      </>
+        <span>Watch out - he gets faster every time he eats!</span>
+      </div>
 
       <div className='grid-container'>
         <div className='side-box'>
-          <div className='button-container'>
-            <button className='button' onClick={reset}>
-              Reset
-            </button>
+          <div className='high-scores'>
+            <h1>High Scores</h1>
+            {highScores.map(({ username, score, date }) => (
+              <div>
+                <h2>
+                  {username} | {score} | {date}
+                </h2>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -215,8 +240,12 @@ function Snake() {
         {hasLost ? (
           <div className='lose-container'>
             <div className='lose-popup'>
-              <h1>YOU LOSE!</h1>
-              <button className='button' onClick={reset}>
+              <h1>GAME OVER!</h1>
+              <h2 className='flash'>Your Score: {score}</h2>
+              <button
+                className='eightbit-btn eightbit-btn--reset'
+                onClick={reset}
+              >
                 Try Again
               </button>
             </div>
@@ -224,16 +253,29 @@ function Snake() {
         ) : null}
 
         <div className='side-box'>
-          <h1>Your score: {snakeCoords.length - 1}</h1>
+          <h1>Your score: {score}</h1>
           {currentSpeed == MAX_SPEED ? (
-            <h1 className='test'>
-              🔥 <span>MAXIMUM SPEED</span> 🔥
-            </h1>
+            <div className='flash maximum-speed'>
+              <span>🔥</span>
+              <h2>MAXIMUM SPEED</h2>
+              <span>🔥</span>
+            </div>
           ) : (
-            <h1>Speed: {(1000 / currentSpeed).toFixed(2)} m/s</h1>
+            <h2>Speed: {formattedSpeed} m/s</h2>
           )}
+          <div className='button-container'>
+            <button className='eightbit-btn' onClick={reset}>
+              Reset
+            </button>
+          </div>
         </div>
       </div>
+
+      {!hasStarted ? (
+        <div>
+          <span className='flash'>Press an arrow key to begin</span>
+        </div>
+      ) : null}
     </div>
   );
 }

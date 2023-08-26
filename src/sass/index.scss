@@ -1,0 +1,20 @@
+@import './globals.scss';
+
+:root {
+  font-family: '8BIT WONDER', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: $black;
+  color: $white;
+}
+
+h1,
+h2 {
+  margin: 0;
+}

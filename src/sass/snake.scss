@@ -1,3 +1,5 @@
+@import './globals.scss';
+
 /* TODO: refactor styles */
 
 .app-container {
@@ -6,6 +8,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .grid-container {
@@ -29,7 +40,7 @@
   width: 3.25rem;
   height: 3.25rem;
   border-radius: 3px;
-  background-color: green;
+  background-color: $green;
 }
 
 .button-container {
@@ -58,11 +69,13 @@
 .lose-popup {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  padding: 1rem;
-  background-color: red;
+  gap: 5rem;
+  padding: 2.5rem;
+  background-color: $red;
   border-radius: 3px;
+  border: 6px solid $white;
   width: 30rem;
 }
 
@@ -119,10 +132,10 @@
 }
 
 .body-circle {
-  background-color: #fff;
+  background-color: $white;
   border-radius: 50%;
-  width: 50%;
-  height: 50%;
+  width: 65%;
+  height: 65%;
 }
 
 .side-box {
@@ -131,9 +144,35 @@
   justify-content: space-evenly;
   align-items: center;
   height: 35vh;
-  width: 20%;
-  padding: 2rem;
-  border: 2px solid #fff;
+  width: 30%;
+}
+
+.high-scores {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+}
+
+.maximum-speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $red;
+
+  span {
+    font-size: 2rem;
+    height: 3rem;
+  }
 }
 
 @-webkit-keyframes blinker {
@@ -145,8 +184,7 @@
   }
 }
 
-.test {
-  color: red;
+.flash {
   -webkit-animation-name: blinker;
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-timing-function: cubic-bezier(0.5, 0, 1, 1);
