@@ -219,7 +219,7 @@ function Snake() {
           <img className='image' src='/lizard.svg' />
         </div>
         <div className={`hidden ${isNextFood ? 'show-next-food' : ''}`}>
-          <div className='next-food'>X</div>
+          <div className='next-food flash'>#</div>
         </div>
         <div className={`hidden ${isInSnake && !isHead ? 'body' : ''}`}>
           <div className='body-circle' />
