@@ -13,7 +13,7 @@ export const DIRECTION_KEYS: { [key: string]: string } = {
 };
 
 export const INITIAL_SPEED = 500;
-export const REDUCTION_SPEED = 25;
+export const SPEED_REDUCTION = 25;
 export const MAX_SPEED = 150;
 
 export const LOADING_LEADERBOARD_MESSAGE = 'Loading leaderboard...';

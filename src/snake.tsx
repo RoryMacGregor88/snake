@@ -15,7 +15,7 @@ import {
   DIRECTION_KEYS,
   INITIAL_SPEED,
   MAX_SPEED,
-  REDUCTION_SPEED,
+  SPEED_REDUCTION,
   INITIAL_COORDS,
   OPPOSITE_KEYS,
 } from './constants';
@@ -118,10 +118,7 @@ function Snake() {
     /** Reduce time between moves each time snake eats */
     if (isEating) {
       if (currentSpeed !== MAX_SPEED) {
-        setCurrentSpeed((prev) => {
-          console.log('SPEED: ', prev - REDUCTION_SPEED);
-          return prev - REDUCTION_SPEED;
-        });
+        setCurrentSpeed((prev) => prev - SPEED_REDUCTION);
       }
 
       /** If isEating, add new coords as head (effectively increments tail length) */
@@ -132,7 +129,8 @@ function Snake() {
      * If not eating, filter first coord, replace head with new coords
      * (effectively retains current tail length)
      */
-    return [...prevCoords.filter((_, i) => i !== 0), nextCoords];
+    const filteredTail = prevCoords.filter((_, i) => i !== 0);
+    return [...filteredTail, nextCoords];
   };
 
   const moveSnake = ({ key }: { key: string }) => {
@@ -207,9 +205,6 @@ function Snake() {
 
     const headClasses = `${isHead ? 'body' : ''}`,
       rotationClasses = `${DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'}`;
-
-    // TODO: remove style prop
-
     return (
       <div key={`${lat}-${lon}`} className={`box  ${headClasses}`}>
         <div className={`hidden ${isHead ? rotationClasses : ''}`}>
