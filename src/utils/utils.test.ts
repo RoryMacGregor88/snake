@@ -1,10 +1,14 @@
-// TODO: move to setupTests.ts
 import { vi, it, describe, expect } from 'vitest';
 
-import { calculateAvailableFood, createGrid, checkHasLost } from './utils';
+import {
+  getRandomNonSnakeBox,
+  createGrid,
+  checkHasLost,
+  calculateNextCoords,
+} from './utils';
 
 describe('utils', () => {
-  describe('calculateAvailableFood', () => {
+  describe('getRandomNonSnakeBox', () => {
     const boxes = [
       [1, 1],
       [1, 2],
@@ -12,7 +16,7 @@ describe('utils', () => {
 
     it('should return a new box from only filtered list', () => {
       const currentCoords = [[1, 1]];
-      const result = calculateAvailableFood(boxes, currentCoords);
+      const result = getRandomNonSnakeBox(boxes, currentCoords);
       expect(result).toStrictEqual([1, 2]);
     });
   });
@@ -29,7 +33,7 @@ describe('utils', () => {
       expect(result).toStrictEqual(expected);
     });
 
-    it('starts new line after max grid size reached', () => {
+    it('should start new line after max grid size reached', () => {
       const result = createGrid(4, 4),
         expected = [
           [1, 1],
@@ -67,5 +71,13 @@ describe('utils', () => {
       checkHasLost(args);
       expect(handleHasLost).not.toHaveBeenCalled();
     });
+  });
+
+  describe('calculateNextCoords', () => {
+    // TODO: for 4 wrapping scenarios
+    it.each();
+
+    // TODO: for 4 immediate direction scenarios
+    it.each();
   });
 });

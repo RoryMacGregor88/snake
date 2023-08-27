@@ -3,19 +3,17 @@ import { MAX_SPEED } from '../../constants';
 interface Props {
   score: number;
   currentSpeed: number;
-  reset: () => void;
+  onResetClick: () => void;
 }
 
-const StatsPanel = ({ score, currentSpeed, reset }: Props) => {
+const StatsPanel = ({ score, currentSpeed, onResetClick }: Props) => {
   const metersPerSecond = 1000 / currentSpeed,
     formattedSpeed = Number.isInteger(metersPerSecond)
       ? metersPerSecond
       : metersPerSecond.toFixed(2);
-
-  // TODO: check times, something is not right
   return (
     <div className='side-box'>
-      <h1>Your score: {score}</h1>
+      <h1>Your Score: {score}</h1>
       {currentSpeed === MAX_SPEED ? (
         <div className='flash maximum-speed'>
           <span>🔥</span>
@@ -26,7 +24,7 @@ const StatsPanel = ({ score, currentSpeed, reset }: Props) => {
         <h2>Speed: {formattedSpeed} m/s</h2>
       )}
       <div className='button-container'>
-        <button className='eightbit-btn' onClick={reset}>
+        <button className='eightbit-btn' onClick={onResetClick}>
           Reset
         </button>
       </div>

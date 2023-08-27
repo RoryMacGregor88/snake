@@ -3,10 +3,10 @@ import { MAX_NAME_LENGTH } from '../../constants';
 
 interface Props {
   handleSubmit: (name: string) => void;
-  cancel: () => void;
+  handleCancel: () => void;
 }
 
-const HighScoreForm = ({ handleSubmit, cancel }: Props) => {
+const HighScoreForm = ({ handleSubmit, handleCancel }: Props) => {
   const [name, setName] = useState('');
 
   const handleChange = ({
@@ -22,6 +22,7 @@ const HighScoreForm = ({ handleSubmit, cancel }: Props) => {
 
   const onSubmit = (evt: FormEvent) => {
     evt.preventDefault();
+    console.log('HIT SUBMT');
     handleSubmit(name);
   };
 
@@ -29,7 +30,7 @@ const HighScoreForm = ({ handleSubmit, cancel }: Props) => {
     <form className='high-score-form' onSubmit={onSubmit}>
       <input
         value={name}
-        placeholder='Enter your name'
+        placeholder='Enter Your Name'
         onChange={handleChange}
       />
 
@@ -37,12 +38,13 @@ const HighScoreForm = ({ handleSubmit, cancel }: Props) => {
         <button className='eightbit-btn'>Submit</button>
         <button
           onClick={(e) => {
+            /** disable button's default 'submit' type, prevent form submitting */
             e.preventDefault();
-            cancel();
+            handleCancel();
           }}
           className='eightbit-btn eightbit-btn--reset'
         >
-          cancel
+          Cancel
         </button>
       </div>
     </form>

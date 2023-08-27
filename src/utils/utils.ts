@@ -1,7 +1,13 @@
 import { MAX_GRID_SIZE, MIN_GRID_SIZE } from '../constants';
 import { Coords } from '../types';
 
-const calculateAvailableFood = (boxes: Coords[], currentCoords: Coords[]) => {
+// TODO: make args into options objects
+
+/**
+ * Filters out all boxes currently occupied by snake, and
+ * returns a random box from those remaining
+ */
+const getRandomNonSnakeBox = (boxes: Coords[], currentCoords: Coords[]) => {
   const filteredBoxes = boxes.filter(([lat, lon]) => {
     const isInSnake = !!currentCoords.find(
       ([currentLat, currentLon]) => currentLat === lat && currentLon === lon
@@ -10,7 +16,8 @@ const calculateAvailableFood = (boxes: Coords[], currentCoords: Coords[]) => {
     return isInSnake ? false : true;
   });
 
-  return filteredBoxes[Math.floor(Math.random() * filteredBoxes.length)];
+  const randomIndex = Math.floor(Math.random() * filteredBoxes.length);
+  return filteredBoxes[randomIndex];
 };
 
 const createGrid = (
@@ -41,9 +48,7 @@ const calculateNextCoords = ({
 }: CalculateNextCoordsArgs): Coords => {
   const [headLat, headLon] = head;
 
-  let nextCoords: Coords = [0, 0];
-
-  /** Allows wrapping upon hitting walls */
+  /** Allows wrapping upon hitting walls/floor/ceiling */
   if (arrowKey === 'ArrowDown' && headLat === MAX_GRID_SIZE) {
     return [MIN_GRID_SIZE, headLon];
   } else if (arrowKey === 'ArrowUp' && headLat === MIN_GRID_SIZE) {
@@ -62,8 +67,7 @@ const calculateNextCoords = ({
     ArrowDown: [headLat + 1, headLon],
   };
 
-  nextCoords = possibleMoves[arrowKey];
-  return nextCoords;
+  return possibleMoves[arrowKey];
 };
 
 interface CheckHasLostProps {
@@ -85,9 +89,4 @@ const checkHasLost = ({
   if (hasLost) handleHasLost();
 };
 
-export {
-  calculateAvailableFood,
-  createGrid,
-  calculateNextCoords,
-  checkHasLost,
-};
+export { getRandomNonSnakeBox, createGrid, calculateNextCoords, checkHasLost };

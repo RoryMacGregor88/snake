@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { GameOverDialog, LeaderBoard, StatsPanel } from './components';
 
 import {
-  calculateAvailableFood,
+  getRandomNonSnakeBox,
   createGrid,
   calculateNextCoords,
   checkHasLost,
@@ -33,7 +33,7 @@ const INITIAL_HIGH_SCORES = [
   'Rando88',
 ].map((name, i) => ({
   name,
-  score: i * 6,
+  score: i * 3,
   date: '21/07/2023',
 }));
 
@@ -49,7 +49,7 @@ function Snake() {
   const [hasLost, setHasLost] = useState(false);
 
   const boxes = useMemo(() => createGrid(), []);
-  const getRandomFood = () => calculateAvailableFood(boxes, snakeCoords);
+  const getRandomFood = () => getRandomNonSnakeBox(boxes, snakeCoords);
 
   const [food, setFood] = useState<Food>(() => ({
     currentFood: getRandomFood(),
@@ -191,24 +191,24 @@ function Snake() {
 
   /** Create grid */
   const renderBoxes = ([lat, lon]: Coords) => {
-    const match = snakeCoords.find(
+    const isInSnake = !!snakeCoords.find(
       ([matchLat, matchLon]) => matchLat === lat && matchLon === lon
     );
 
     const [headLat, headLon] = snakeCoords[snakeCoords.length - 1];
-
     const { currentFood, prevFood } = food;
 
     const [currentFoodLat, currentFoodLon] = currentFood;
     const [prevFoodLat, prevFoodLon] = prevFood;
 
-    const isInSnake = !!match,
-      isHead = lat === headLat && lon === headLon,
+    const isHead = lat === headLat && lon === headLon,
       isCurrentFood = lat === currentFoodLat && lon === currentFoodLon,
       isPrevFood = lat === prevFoodLat && lon === prevFoodLon;
 
     const headClasses = `${isHead ? 'body' : ''}`,
       rotationClasses = `${DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'}`;
+
+    // TODO: remove style prop
 
     return (
       <div key={`${lat}-${lon}`} className={`box  ${headClasses}`}>
@@ -240,16 +240,20 @@ function Snake() {
 
         <div className='grid'>{boxes.map(renderBoxes)}</div>
 
-        {!hasLost ? (
+        {hasLost ? (
           <GameOverDialog
-            score={100}
+            score={score}
             onResetClick={reset}
-            currentHighScore={currentHighScore}
+            isHighScore={score > currentHighScore}
             handleSaveHighScore={(name) => handleSaveHighScore({ name, score })}
           />
         ) : null}
 
-        <StatsPanel score={score} currentSpeed={currentSpeed} reset={reset} />
+        <StatsPanel
+          score={score}
+          currentSpeed={currentSpeed}
+          onResetClick={reset}
+        />
       </div>
 
       {!hasStarted ? (
