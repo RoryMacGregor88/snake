@@ -75,9 +75,8 @@ describe('utils', () => {
 
   describe('calculateNextCoords', () => {
     // TODO: for 4 wrapping scenarios
-    it.each();
-
+    // it.each();
     // TODO: for 4 immediate direction scenarios
-    it.each();
+    // it.each();
   });
 });

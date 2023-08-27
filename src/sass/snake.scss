@@ -145,7 +145,11 @@
   visibility: visible;
 }
 
-.show-prev-food {
+.next-food {
+  font-size: 1.5rem;
+}
+
+.show-next-food {
   visibility: visible;
 }
 
@@ -191,6 +195,12 @@
     display: table;
     border-collapse: separate;
     border-spacing: 1rem 0;
+
+    thead {
+      td {
+        text-decoration: underline;
+      }
+    }
 
     td {
       text-align: center;

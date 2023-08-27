@@ -2,7 +2,7 @@ export type Coords = [number, number];
 
 export interface Food {
   currentFood: Coords;
-  prevFood: Coords;
+  nextFood: Coords;
 }
 
 export interface LeaderboardScore {

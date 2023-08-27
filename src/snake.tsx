@@ -42,18 +42,18 @@ function Snake() {
   const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
+  const [hasLost, setHasLost] = useState(false);
 
   const [leaderboardScores, setLeaderboardScores] =
     useState<LeaderboardScore[]>(INITIAL_HIGH_SCORES);
 
-  const [hasLost, setHasLost] = useState(false);
-
   const boxes = useMemo(() => createGrid(), []);
   const getRandomFood = () => getRandomNonSnakeBox(boxes, snakeCoords);
 
+  // TODO: need to make sure they're not the same coords (pass value of one to the other)
   const [food, setFood] = useState<Food>(() => ({
     currentFood: getRandomFood(),
-    prevFood: [0, 0],
+    nextFood: getRandomFood(),
   }));
 
   const currentHighScore = leaderboardScores.reduce(
@@ -86,10 +86,10 @@ function Snake() {
     const isEating = foodLat === lat && foodLon === lon;
 
     if (isEating) {
-      /** CurrentFood from last iteration is prevFood next time around */
-      setFood(({ currentFood: prevFood }) => ({
-        currentFood: getRandomFood(),
-        prevFood,
+      /** NextFood from last iteration is currentFood next time around */
+      setFood(({ nextFood }) => ({
+        currentFood: nextFood,
+        nextFood: getRandomFood(),
       }));
     }
     return isEating;
@@ -115,7 +115,7 @@ function Snake() {
 
     const isEating = handleChecks(prevCoords, nextCoords);
 
-    /** Reduce speed (ms) each time snake eats */
+    /** Reduce time between moves each time snake eats */
     if (isEating) {
       if (currentSpeed !== MAX_SPEED) {
         setCurrentSpeed((prev) => {
@@ -170,7 +170,7 @@ function Snake() {
     setCurrentSpeed(INITIAL_SPEED);
     setHasStarted(false);
     setCurrentDirection('');
-    setFood({ currentFood: getRandomFood(), prevFood: [0, 0] });
+    setFood({ currentFood: getRandomFood(), nextFood: getRandomFood() });
 
     if (hasLost) {
       setHasLost(false);
@@ -196,14 +196,14 @@ function Snake() {
     );
 
     const [headLat, headLon] = snakeCoords[snakeCoords.length - 1];
-    const { currentFood, prevFood } = food;
+    const { currentFood, nextFood } = food;
 
     const [currentFoodLat, currentFoodLon] = currentFood;
-    const [prevFoodLat, prevFoodLon] = prevFood;
+    const [nextFoodLat, nextFoodLon] = nextFood;
 
     const isHead = lat === headLat && lon === headLon,
       isCurrentFood = lat === currentFoodLat && lon === currentFoodLon,
-      isPrevFood = lat === prevFoodLat && lon === prevFoodLon;
+      isNextFood = lat === nextFoodLat && lon === nextFoodLon;
 
     const headClasses = `${isHead ? 'body' : ''}`,
       rotationClasses = `${DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'}`;
@@ -218,8 +218,8 @@ function Snake() {
         <div className={`hidden ${isCurrentFood ? 'show-current-food' : ''}`}>
           <img className='image' src='/lizard.svg' />
         </div>
-        <div className={`hidden ${isPrevFood ? 'show-prev-food' : ''}`}>
-          <div className='body-circle' style={{ backgroundColor: '#fff' }} />
+        <div className={`hidden ${isNextFood ? 'show-next-food' : ''}`}>
+          <div className='next-food'>X</div>
         </div>
         <div className={`hidden ${isInSnake && !isHead ? 'body' : ''}`}>
           <div className='body-circle' />
