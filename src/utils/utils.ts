@@ -1,15 +1,22 @@
 import { MAX_GRID_SIZE, MIN_GRID_SIZE } from '../constants';
 import { Coords } from '../types';
 
-// TODO: make args into options objects
-
 /**
- * Filters out all boxes currently occupied by snake, and
- * returns a random box from those remaining
+ * Filters out all boxes currently occupied by snake or current
+ * food, and returns a random box from those remaining
  */
-const getRandomNonSnakeBox = (boxes: Coords[], currentCoords: Coords[]) => {
+
+interface GetRandomNonSnakeBoxArgs {
+  boxes: Coords[];
+  filterCoords: Coords[];
+}
+
+const getRandomNonSnakeBox = ({
+  boxes,
+  filterCoords,
+}: GetRandomNonSnakeBoxArgs) => {
   const filteredBoxes = boxes.filter(([lat, lon]) => {
-    const isInSnake = !!currentCoords.find(
+    const isInSnake = !!filterCoords.find(
       ([currentLat, currentLon]) => currentLat === lat && currentLon === lon
     );
 
@@ -18,6 +25,23 @@ const getRandomNonSnakeBox = (boxes: Coords[], currentCoords: Coords[]) => {
 
   const randomIndex = Math.floor(Math.random() * filteredBoxes.length);
   return filteredBoxes[randomIndex];
+};
+
+interface GetRandomFoodArgs {
+  boxes: Coords[];
+  snakeCoords: Coords[];
+  currentFood?: Coords;
+}
+
+const getRandomFood = ({
+  boxes,
+  snakeCoords,
+  currentFood,
+}: GetRandomFoodArgs) => {
+  const filterCoords = !!currentFood
+    ? [currentFood, ...snakeCoords]
+    : snakeCoords;
+  return getRandomNonSnakeBox({ boxes, filterCoords });
 };
 
 const createGrid = (
@@ -89,4 +113,10 @@ const checkHasLost = ({
   if (hasLost) handleHasLost();
 };
 
-export { getRandomNonSnakeBox, createGrid, calculateNextCoords, checkHasLost };
+export {
+  getRandomNonSnakeBox,
+  createGrid,
+  calculateNextCoords,
+  checkHasLost,
+  getRandomFood,
+};
