@@ -133,14 +133,6 @@ const useSnake = ({ boxes }: Props) => {
     return isEating;
   };
 
-  const handleChecks = (prevCoords: Coords[], nextCoords: Coords) => {
-    const hasLost = checkHasLost({ prevCoords, nextCoords });
-    if (hasLost) handleHasLost();
-
-    const isEating = checkIsEating({ nextCoords });
-    return isEating;
-  };
-
   interface GetNextCoordsArgs {
     prevCoords: Coords[];
     key: string;
@@ -152,8 +144,10 @@ const useSnake = ({ boxes }: Props) => {
       arrowKey: key,
     });
 
-    const isEating = handleChecks(prevCoords, nextCoords);
+    const hasLost = checkHasLost({ prevCoords, nextCoords });
+    if (hasLost) handleHasLost();
 
+    const isEating = checkIsEating({ nextCoords });
     /** Reduce time between moves each time snake eats */
     if (isEating) {
       if (currentSpeed !== MAX_SPEED) {

@@ -26,3 +26,5 @@ export const OPPOSITE_KEYS: { [key: string]: string } = {
 };
 
 export const MAX_NAME_LENGTH = 12;
+
+export const MIN_SCREEN_SIZE = 1500;

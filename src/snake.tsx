@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 
-import { GameOverDialog, Grid, LeaderBoard, StatsPanel } from './components';
-
 import useSnake from './use-snake/use-snake.hook';
 
+import { GameOverDialog, Grid, LeaderBoard, StatsPanel } from './components';
+
 import { createGrid } from './utils/utils';
+
+import { MIN_SCREEN_SIZE } from './constants';
 
 import './sass/snake.scss';
 
@@ -25,7 +27,7 @@ function Snake() {
     reset,
   } = useSnake({ boxes });
 
-  return (
+  return window.innerWidth >= MIN_SCREEN_SIZE ? (
     <div className='app-container'>
       <div className='header'>
         <h1>React Snake!</h1>
@@ -63,6 +65,15 @@ function Snake() {
           <span className='flash'>Press an arrow key to begin</span>
         </div>
       ) : null}
+    </div>
+  ) : (
+    <div className='screen-too-small'>
+      <h1>Unable to load.</h1>
+      <h3>
+        This app is designed for screen sizes of {MIN_SCREEN_SIZE} pixels width
+        or more.
+      </h3>
+      <h3>Your current device width is {innerWidth} pixels.</h3>
     </div>
   );
 }
