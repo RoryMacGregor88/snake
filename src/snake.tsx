@@ -17,10 +17,10 @@ function Snake() {
     snakeCoords,
     food,
     currentDirection,
+    currentSpeed,
     leaderboardScores,
     hasLost,
     hasStarted,
-    currentSpeed,
     handleSaveHighScore,
     reset,
   } = useSnake({ boxes });
@@ -28,7 +28,7 @@ function Snake() {
   return (
     <div className='app-container'>
       <div className='header'>
-        <h1>Snake!</h1>
+        <h1>React Snake!</h1>
         <span>Watch out - he gets faster every time he eats!</span>
       </div>
 

@@ -16,7 +16,7 @@ import { Coords, LeaderboardScore, Food } from '../types';
 import {
   checkHasLost,
   calculateNextCoords,
-  getRandomFood,
+  getRandomNonSnakeBox,
 } from '../utils/utils';
 
 /** Mocked for now, will be real data soon */
@@ -34,28 +34,37 @@ const INITIAL_HIGH_SCORES = [
 
 interface Props {
   boxes: Coords[];
+  highScores: LeaderboardScore[];
 }
 
 const useSnake = ({ boxes }: Props) => {
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasLost, setHasLost] = useState(false);
   const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
-  const [hasLost, setHasLost] = useState(false);
-
   const [leaderboardScores, setLeaderboardScores] =
     useState<LeaderboardScore[]>(INITIAL_HIGH_SCORES);
+
+  const [isMoving, setIsMoving] = useState(false);
+
+  /** Wrapper to save duplication of boxes/filterCoords args */
+  const getRandomFood = ({ currentFood }: { currentFood?: Coords } = {}) => {
+    const filterCoords = !!currentFood
+      ? [currentFood, ...snakeCoords]
+      : snakeCoords;
+    return getRandomNonSnakeBox({ boxes, filterCoords });
+  };
 
   /**
    * Initialises food and look-ahead food while making sure the
    * look-ahead food is not the same coords as the starting food
    */
   const initialiseFood = () => {
-    // TODO: don't like repeating args
-    const currentFood = getRandomFood({ boxes, snakeCoords });
+    const currentFood = getRandomFood();
     return {
       currentFood,
-      nextFood: getRandomFood({ boxes, snakeCoords, currentFood }),
+      nextFood: getRandomFood({ currentFood }),
     };
   };
 
@@ -63,9 +72,13 @@ const useSnake = ({ boxes }: Props) => {
 
   useEffect(() => {
     if (!hasStarted || hasLost) return;
-    setTimeout(() => moveSnake({ key: currentDirection }), currentSpeed);
+    if (!isMoving) {
+      moveSnake({ key: currentDirection });
+      setIsMoving(true);
+      setTimeout(() => setIsMoving(false), currentSpeed);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snakeCoords, hasStarted, hasLost]);
+  }, [snakeCoords, hasStarted, hasLost, isMoving]);
 
   /**
    * Add window listener for arrow key presses,
@@ -93,7 +106,6 @@ const useSnake = ({ boxes }: Props) => {
     window.removeEventListener('keydown', updateDirection);
   };
 
-  // TODO: extract
   const handleSaveHighScore = (playerData: { name: string; score: number }) => {
     const today = new Date(),
       date = format(today, 'dd/LL/uuuu');
@@ -102,7 +114,6 @@ const useSnake = ({ boxes }: Props) => {
     setLeaderboardScores((prev) => [newHighScore, ...prev]);
   };
 
-  // TODO: extract
   const checkIsEating = ({ nextCoords }: { nextCoords: Coords }) => {
     const [lat, lon] = nextCoords;
 
@@ -117,16 +128,16 @@ const useSnake = ({ boxes }: Props) => {
         const currentFood = nextFood;
         return {
           currentFood,
-          nextFood: getRandomFood({ boxes, snakeCoords, currentFood }),
+          nextFood: getRandomFood({ currentFood }),
         };
       });
     }
     return isEating;
   };
 
-  // TODO: extract
   const handleChecks = (prevCoords: Coords[], nextCoords: Coords) => {
-    checkHasLost({ prevCoords, nextCoords, handleHasLost });
+    const hasLost = checkHasLost({ prevCoords, nextCoords });
+    if (hasLost) handleHasLost();
 
     const isEating = checkIsEating({ nextCoords });
     return isEating;
@@ -137,7 +148,6 @@ const useSnake = ({ boxes }: Props) => {
     key: string;
   }
 
-  // TODO: extract
   const getNextCoords = ({ prevCoords, key }: GetNextCoordsArgs) => {
     const nextCoords = calculateNextCoords({
       head: prevCoords[prevCoords.length - 1],
@@ -164,10 +174,9 @@ const useSnake = ({ boxes }: Props) => {
     return [...filteredTail, nextCoords];
   };
 
-  const moveSnake = ({ key }: { key: string }) => {
+  const moveSnake = async ({ key }: { key: string }) => {
     if (currentDirection !== key) setCurrentDirection(key);
     setSnakeCoords((prevCoords) => getNextCoords({ prevCoords, key }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   const updateDirection = ({ key }: { key: string }) => {
@@ -187,7 +196,7 @@ const useSnake = ({ boxes }: Props) => {
     setCurrentSpeed(INITIAL_SPEED);
     setHasStarted(false);
     setCurrentDirection('');
-    initialiseFood();
+    setFood(initialiseFood());
     if (hasLost) {
       setHasLost(false);
       /**
@@ -200,19 +209,19 @@ const useSnake = ({ boxes }: Props) => {
   };
 
   const fns = { handleSaveHighScore, reset },
-    state = {
+    gameState = {
       score,
       isHighScore,
       snakeCoords,
       food,
       currentDirection,
+      currentSpeed,
       leaderboardScores,
       hasLost,
       hasStarted,
-      currentSpeed,
     };
 
-  return { ...fns, ...state };
+  return { ...fns, ...gameState };
 };
 
 export default useSnake;

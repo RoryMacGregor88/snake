@@ -26,8 +26,6 @@ describe('HighScoreForm', () => {
     ).toBeInTheDocument();
   });
 
-  // TODO: test for different speeds, as they appear to be wrong
-
   it('should display maximum speed message if max speed reached', () => {
     const currentSpeed = 150;
     render(<StatsPanel currentSpeed={currentSpeed} />);

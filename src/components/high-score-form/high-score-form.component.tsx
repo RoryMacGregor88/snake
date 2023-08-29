@@ -22,7 +22,6 @@ const HighScoreForm = ({ handleSubmit, handleCancel }: Props) => {
 
   const onSubmit = (evt: FormEvent) => {
     evt.preventDefault();
-    console.log('HIT SUBMT');
     handleSubmit(name);
   };
 

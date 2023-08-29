@@ -20,28 +20,11 @@ const getRandomNonSnakeBox = ({
       ([currentLat, currentLon]) => currentLat === lat && currentLon === lon
     );
 
-    return isInSnake ? false : true;
+    return !isInSnake;
   });
 
   const randomIndex = Math.floor(Math.random() * filteredBoxes.length);
   return filteredBoxes[randomIndex];
-};
-
-interface GetRandomFoodArgs {
-  boxes: Coords[];
-  snakeCoords: Coords[];
-  currentFood?: Coords;
-}
-
-const getRandomFood = ({
-  boxes,
-  snakeCoords,
-  currentFood,
-}: GetRandomFoodArgs) => {
-  const filterCoords = !!currentFood
-    ? [currentFood, ...snakeCoords]
-    : snakeCoords;
-  return getRandomNonSnakeBox({ boxes, filterCoords });
 };
 
 const createGrid = (
@@ -97,26 +80,15 @@ const calculateNextCoords = ({
 interface CheckHasLostProps {
   prevCoords: Coords[];
   nextCoords: Coords;
-  handleHasLost: () => void;
 }
 
-const checkHasLost = ({
-  prevCoords,
-  nextCoords,
-  handleHasLost,
-}: CheckHasLostProps) => {
+const checkHasLost = ({ prevCoords, nextCoords }: CheckHasLostProps) => {
   const hasLost = !!prevCoords.find(([prevLat, prevLon]) => {
     const [lat, lon] = nextCoords;
     return prevLat === lat && prevLon === lon;
   });
 
-  if (hasLost) handleHasLost();
+  return hasLost;
 };
 
-export {
-  getRandomNonSnakeBox,
-  createGrid,
-  calculateNextCoords,
-  checkHasLost,
-  getRandomFood,
-};
+export { getRandomNonSnakeBox, createGrid, calculateNextCoords, checkHasLost };
