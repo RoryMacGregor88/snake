@@ -34,7 +34,6 @@ const INITIAL_HIGH_SCORES = [
 
 interface Props {
   boxes: Coords[];
-  highScores: LeaderboardScore[];
 }
 
 const useSnake = ({ boxes }: Props) => {
@@ -43,10 +42,9 @@ const useSnake = ({ boxes }: Props) => {
   const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
+  const [isMoving, setIsMoving] = useState(false);
   const [leaderboardScores, setLeaderboardScores] =
     useState<LeaderboardScore[]>(INITIAL_HIGH_SCORES);
-
-  const [isMoving, setIsMoving] = useState(false);
 
   /** Wrapper to save duplication of boxes/filterCoords args */
   const getRandomFood = ({ currentFood }: { currentFood?: Coords } = {}) => {
