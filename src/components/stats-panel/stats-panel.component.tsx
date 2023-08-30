@@ -1,4 +1,5 @@
 import { MAX_SPEED } from '../../constants';
+import IconLegend from '../icon-legend.component';
 
 interface Props {
   score: number;
@@ -13,7 +14,7 @@ const StatsPanel = ({ score, currentSpeed, onResetClick }: Props) => {
       : metersPerSecond.toFixed(2);
   return (
     <div className='side-box'>
-      <h1>Your Score: {score}</h1>
+      <h1>Score: {score}</h1>
       {currentSpeed === MAX_SPEED ? (
         <div className='flash maximum-speed'>
           <span>🔥</span>
@@ -23,6 +24,9 @@ const StatsPanel = ({ score, currentSpeed, onResetClick }: Props) => {
       ) : (
         <h2>Speed: {formattedSpeed} m/s</h2>
       )}
+
+      <IconLegend />
+
       <div className='button-container'>
         <button className='eightbit-btn' onClick={onResetClick}>
           Reset

@@ -18,6 +18,7 @@ function Snake() {
     isHighScore,
     snakeCoords,
     food,
+    extras,
     currentDirection,
     currentSpeed,
     leaderboardScores,
@@ -41,6 +42,7 @@ function Snake() {
           boxes={boxes}
           snakeCoords={snakeCoords}
           food={food}
+          extras={extras}
           currentDirection={currentDirection}
         />
 

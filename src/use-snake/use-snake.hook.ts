@@ -3,15 +3,19 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 
 import {
-  INITIAL_COORDS,
+  INITIAL_SNAKE_COORDS,
   INITIAL_SPEED,
   MAX_SPEED,
   SPEED_REDUCTION,
   DIRECTION_KEYS,
   OPPOSITE_KEYS,
+  EXTRA_TYPES,
+  EXTRAS_LIFESPAN,
+  DATE_FORMAT,
+  INITIAL_EXTRA_COORDS,
 } from '../constants';
 
-import { Coords, LeaderboardScore, Food } from '../types';
+import { Coords, LeaderboardScore, Food, Extras, ExtraType } from '../types';
 
 import {
   checkHasLost,
@@ -39,7 +43,8 @@ interface Props {
 const useSnake = ({ boxes }: Props) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [hasLost, setHasLost] = useState(false);
-  const [snakeCoords, setSnakeCoords] = useState<Coords[]>(INITIAL_COORDS);
+  const [snakeCoords, setSnakeCoords] =
+    useState<Coords[]>(INITIAL_SNAKE_COORDS);
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
   const [isMoving, setIsMoving] = useState(false);
@@ -67,7 +72,59 @@ const useSnake = ({ boxes }: Props) => {
   };
 
   const [food, setFood] = useState<Food>(initialiseFood);
+  const [extras, setExtras] = useState<Extras>({
+    bonus: INITIAL_EXTRA_COORDS,
+    boobyTrap: INITIAL_EXTRA_COORDS,
+  });
 
+  const currentHighScore = leaderboardScores.reduce(
+    (acc, { score }) => (score > acc ? score : acc),
+    0
+  );
+
+  const score = snakeCoords.length - 1,
+    isHighScore = score > currentHighScore;
+
+  const generateExtra = (type: ExtraType) => {
+    const { currentFood, nextFood } = food;
+    const { bonus, boobyTrap } = extras;
+
+    /** Filter out bonus/boobyTrap if null */
+    let filterCoords = [currentFood, nextFood, bonus, boobyTrap].reduce(
+      (acc: Coords[], cur) => (!!cur ? [...acc, cur] : acc),
+      []
+    );
+
+    setExtras((prev) => ({
+      ...prev,
+      [type]: getRandomNonSnakeBox({ boxes, filterCoords }),
+    }));
+
+    /** Remove extra after timeout expires */
+    setTimeout(() => {
+      setExtras((prev) => ({ ...prev, [type]: INITIAL_EXTRA_COORDS }));
+    }, currentSpeed * EXTRAS_LIFESPAN);
+  };
+
+  /**
+   * Generate bonuses at random intervals that
+   * will disappear quicker as points increase
+   */
+  useEffect(() => {
+    if (!hasStarted || hasLost) return;
+    //TODO: make random
+    if (score % 5 === 0) generateExtra(EXTRA_TYPES.bonus);
+    if (score % 3 === 0) generateExtra(EXTRA_TYPES.boobyTrap);
+  }, [score]);
+
+  /**
+   * This is the engine that drives the snake's movement.
+   * Initially, isMoving is false, so the if block runs
+   * and the snake moves. isMoving is then set to true, which
+   * prevents the if block running, and a timer is initiated
+   * to set isMoving back to false when it expires, which will
+   * allow the if block to run again
+   */
   useEffect(() => {
     if (!hasStarted || hasLost) return;
     if (!isMoving) {
@@ -76,7 +133,7 @@ const useSnake = ({ boxes }: Props) => {
       setTimeout(() => setIsMoving(false), currentSpeed);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snakeCoords, hasStarted, hasLost, isMoving]);
+  }, [hasStarted, hasLost, isMoving]);
 
   /**
    * Add window listener for arrow key presses,
@@ -90,14 +147,6 @@ const useSnake = ({ boxes }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [food, currentDirection]);
 
-  const currentHighScore = leaderboardScores.reduce(
-    (acc, { score }) => (score > acc ? score : acc),
-    0
-  );
-
-  const score = snakeCoords.length - 1,
-    isHighScore = score > currentHighScore;
-
   const handleHasLost = () => {
     setHasLost(true);
     /** Prevent further movement of snake */
@@ -106,13 +155,13 @@ const useSnake = ({ boxes }: Props) => {
 
   const handleSaveHighScore = (playerData: { name: string; score: number }) => {
     const today = new Date(),
-      date = format(today, 'dd/LL/uuuu');
+      date = format(today, DATE_FORMAT);
 
     const newHighScore = { ...playerData, date };
     setLeaderboardScores((prev) => [newHighScore, ...prev]);
   };
 
-  const checkIsEating = ({ nextCoords }: { nextCoords: Coords }) => {
+  const checkIsEatingFood = ({ nextCoords }: { nextCoords: Coords }) => {
     const [lat, lon] = nextCoords;
 
     const { currentFood } = food;
@@ -133,6 +182,45 @@ const useSnake = ({ boxes }: Props) => {
     return isEating;
   };
 
+  const checkIsEatingExtra = ({ nextCoords }: { nextCoords: Coords }) => {
+    const [lat, lon] = nextCoords;
+
+    const { bonus, boobyTrap } = extras;
+
+    const [bonusLat, bonusLon] = bonus;
+    const [boobyTrapLat, boobyTrapLon] = boobyTrap;
+
+    const isEatingBonus = bonusLat === lat && bonusLon === lon,
+      isEatingBoobyTrap = boobyTrapLat === lat && boobyTrapLon === lon;
+
+    // TODO: if state like this is extracted, these checks could all be utils
+    if (isEatingBonus || isEatingBoobyTrap) {
+      setExtras(({ bonus, boobyTrap }) => ({
+        bonus: isEatingBonus ? INITIAL_EXTRA_COORDS : bonus,
+        boobyTrap: isEatingBoobyTrap ? INITIAL_EXTRA_COORDS : boobyTrap,
+      }));
+    }
+
+    return { isEatingBonus, isEatingBoobyTrap };
+  };
+
+  interface HandleChecksArgs {
+    prevCoords: Coords[];
+    nextCoords: Coords;
+  }
+
+  const handleChecks = ({ prevCoords, nextCoords }: HandleChecksArgs) => {
+    const hasLost = checkHasLost({ prevCoords, nextCoords });
+    const isEatingFood = checkIsEatingFood({ nextCoords });
+    const { isEatingBonus, isEatingBoobyTrap } = checkIsEatingExtra({
+      nextCoords,
+    });
+
+    // TODO: extract state to here instead (handleHasLost, handleIsEating, etc)
+
+    return { hasLost, isEatingFood, isEatingBonus, isEatingBoobyTrap };
+  };
+
   interface GetNextCoordsArgs {
     prevCoords: Coords[];
     key: string;
@@ -144,17 +232,26 @@ const useSnake = ({ boxes }: Props) => {
       arrowKey: key,
     });
 
-    const hasLost = checkHasLost({ prevCoords, nextCoords });
+    const { hasLost, isEatingFood, isEatingBonus, isEatingBoobyTrap } =
+      handleChecks({ prevCoords, nextCoords });
+
     if (hasLost) handleHasLost();
 
-    const isEating = checkIsEating({ nextCoords });
+    if (isEatingBonus) {
+      // invincibility
+    }
+
+    if (isEatingBoobyTrap) {
+      // can't change direction
+    }
+
     /** Reduce time between moves each time snake eats */
-    if (isEating) {
+    if (isEatingFood) {
       if (currentSpeed !== MAX_SPEED) {
         setCurrentSpeed((prev) => prev - SPEED_REDUCTION);
       }
 
-      /** If isEating, add new coords as head (effectively increments tail length) */
+      /** If isEatingFood, add new coords as head (effectively increments tail length) */
       return [...prevCoords, nextCoords];
     }
 
@@ -184,7 +281,7 @@ const useSnake = ({ boxes }: Props) => {
   };
 
   const reset = () => {
-    setSnakeCoords(INITIAL_COORDS);
+    setSnakeCoords(INITIAL_SNAKE_COORDS);
     setCurrentSpeed(INITIAL_SPEED);
     setHasStarted(false);
     setCurrentDirection('');
@@ -206,6 +303,7 @@ const useSnake = ({ boxes }: Props) => {
       isHighScore,
       snakeCoords,
       food,
+      extras,
       currentDirection,
       currentSpeed,
       leaderboardScores,
