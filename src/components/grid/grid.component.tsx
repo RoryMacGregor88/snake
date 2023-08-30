@@ -44,8 +44,8 @@ const Grid = ({
         isBoobyTrap = lat === boobyTrapLat && lon === boobyTrapLon;
 
       /** For snake */
-      const invincibleClasses = `${isInvincible ? 'invincible' : ''}`;
-      const poisonedClasses = `${isPoisoned ? 'poisoned' : ''}`;
+      // const invincibleClasses = `${isInvincible ? 'invincible' : ''}`;
+      // const poisonedClasses = `${isPoisoned ? 'poisoned' : ''}`;
 
       const rotationClasses = `${
         DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'
