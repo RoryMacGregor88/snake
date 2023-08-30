@@ -8,4 +8,22 @@ $white: rgb(250, 250, 250);
 $red: rgb(228, 0, 39);
 $green: rgb(42, 161, 70);
 $blue: rgb(38, 75, 204);
-$yellow: rgb(248, 208, 52);
+$gold: rgb(248, 208, 52);
+
+@-webkit-keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.flash {
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-duration: 0.75s;
+}

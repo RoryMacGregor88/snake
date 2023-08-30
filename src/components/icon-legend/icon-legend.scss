@@ -1,0 +1,31 @@
+@import '../../sass//globals.scss';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  height: 2rem;
+  fill: #fff;
+}
+
+.next-lizard {
+  font-size: 1.5rem;
+  padding: 0.25rem;
+}
+
+.invincible {
+  color: $gold;
+  fill: $gold;
+}
+
+.poisoned {
+  color: $red;
+  fill: $red;
+}

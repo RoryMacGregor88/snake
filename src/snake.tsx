@@ -28,6 +28,9 @@ function Snake() {
     reset,
   } = useSnake({ boxes });
 
+  const isInvincible = false,
+    isPoisoned = false;
+
   return window.innerWidth >= MIN_SCREEN_SIZE ? (
     <div className='app-container'>
       <div className='header'>
@@ -58,6 +61,8 @@ function Snake() {
         <StatsPanel
           score={score}
           currentSpeed={currentSpeed}
+          isInvincible={isInvincible}
+          isPoisoned={isPoisoned}
           onResetClick={reset}
         />
       </div>

@@ -128,14 +128,6 @@
   width: inherit;
 }
 
-.icon-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 1rem;
-  height: 2rem;
-}
-
 .hidden {
   position: absolute;
   top: 0;
@@ -253,22 +245,4 @@
     font-size: 2rem;
     height: 3rem;
   }
-}
-
-@-webkit-keyframes blinker {
-  from {
-    opacity: 1;
-  }
-  60% {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.flash {
-  -webkit-animation-name: blinker;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-duration: 0.75s;
 }

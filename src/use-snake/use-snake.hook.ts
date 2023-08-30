@@ -113,16 +113,16 @@ const useSnake = ({ boxes }: Props) => {
       setExtras((prev) => ({ ...prev, [type]: INITIAL_EXTRA_COORDS }));
     }, currentSpeed * EXTRAS_LIFESPAN);
   };
-
   /**
    * Generate bonuses at random intervals that
    * will disappear quicker as points increase
    */
   useEffect(() => {
     if (!hasStarted || hasLost) return;
-    //TODO: make random
-    if (score % 5 === 0) generateExtra(EXTRA_TYPES.bonus);
-    if (score % 3 === 0) generateExtra(EXTRA_TYPES.boobyTrap);
+
+    /** Invincibility appears rarely, poison frequently (lmao) */
+    if (score % 7 === 0) generateExtra(EXTRA_TYPES.bonus);
+    if (score % 4 === 0) generateExtra(EXTRA_TYPES.boobyTrap);
   }, [score]);
 
   /**
