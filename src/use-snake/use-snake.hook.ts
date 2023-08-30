@@ -328,20 +328,18 @@ const useSnake = ({ boxes }: Props) => {
   };
 
   const fns = { handleSaveHighScore, reset },
-    gameState = {
+    bools = { isHighScore, hasLost, hasStarted, isPoisoned, isInvincible },
+    data = {
       score,
-      isHighScore,
-      snakeCoords,
-      food,
-      extras,
       currentDirection,
       currentSpeed,
       leaderboardScores,
-      hasLost,
-      hasStarted,
+      snakeCoords,
+      food,
+      extras,
     };
 
-  return { ...fns, ...gameState };
+  return { ...fns, ...bools, ...data };
 };
 
 export default useSnake;

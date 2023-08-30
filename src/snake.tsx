@@ -16,20 +16,19 @@ function Snake() {
   const {
     score,
     isHighScore,
-    snakeCoords,
-    food,
-    extras,
+    hasLost,
+    hasStarted,
+    isPoisoned,
+    isInvincible,
     currentDirection,
     currentSpeed,
     leaderboardScores,
-    hasLost,
-    hasStarted,
+    snakeCoords,
+    food,
+    extras,
     handleSaveHighScore,
     reset,
   } = useSnake({ boxes });
-
-  const isInvincible = false,
-    isPoisoned = false;
 
   return window.innerWidth >= MIN_SCREEN_SIZE ? (
     <div className='app-container'>
@@ -47,6 +46,8 @@ function Snake() {
           food={food}
           extras={extras}
           currentDirection={currentDirection}
+          isInvincible={isInvincible}
+          isPoisoned={isPoisoned}
         />
 
         {hasLost ? (

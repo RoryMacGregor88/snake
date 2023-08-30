@@ -7,6 +7,8 @@ interface Props {
   food: Food;
   extras: Extras;
   currentDirection: string;
+  isInvincible: boolean;
+  isPoisoned: boolean;
 }
 
 const Grid = ({
@@ -15,6 +17,8 @@ const Grid = ({
   food,
   extras,
   currentDirection,
+  isInvincible,
+  isPoisoned,
 }: Props) => (
   <div className='grid'>
     {boxes.map(([lat, lon]: Coords) => {
@@ -28,42 +32,60 @@ const Grid = ({
       const [currentFoodLat, currentFoodLon] = currentFood;
       const [nextFoodLat, nextFoodLon] = nextFood;
 
+      const isHead = lat === headLat && lon === headLon,
+        isCurrentFood = lat === currentFoodLat && lon === currentFoodLon,
+        isNextFood = lat === nextFoodLat && lon === nextFoodLon;
+
       const { bonus, boobyTrap } = extras;
       const [bonusLat, bonusLon] = bonus;
       const [boobyTrapLat, boobyTrapLon] = boobyTrap;
 
-      const isHead = lat === headLat && lon === headLon,
-        isCurrentFood = lat === currentFoodLat && lon === currentFoodLon,
-        isNextFood = lat === nextFoodLat && lon === nextFoodLon,
-        isBonus = lat === bonusLat && lon === bonusLon,
+      const isBonus = lat === bonusLat && lon === bonusLon,
         isBoobyTrap = lat === boobyTrapLat && lon === boobyTrapLon;
 
-      const headClasses = `${isHead ? 'body' : ''}`,
-        rotationClasses = `${DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'}`;
+      /** For snake */
+      const invincibleClasses = `${isInvincible ? 'invincible' : ''}`;
+      const poisonedClasses = `${isPoisoned ? 'poisoned' : ''}`;
+
+      const rotationClasses = `${
+        DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'
+      } ${isInvincible ? 'invincible' : ''} ${isPoisoned ? 'poisoned' : ''}`;
+
+      const bodyClasses = `hidden ${isInSnake && !isHead ? 'body' : ''} ${
+        isInvincible ? 'invincible' : ''
+      } ${isPoisoned ? 'poisoned' : ''}`;
+
+      /** For various icons */
+      const currentFoodClasses = `hidden ${
+          isCurrentFood ? 'show-current-food' : ''
+        }`,
+        nextFoodClasses = `hidden ${isNextFood ? 'show-next-food' : ''}`,
+        bonusClasses = `hidden ${isBonus ? 'bonus' : ''}`,
+        boobyTrapClasses = `hidden ${isBoobyTrap ? 'booby-trap' : ''}`;
       return (
-        <div key={`${lat}-${lon}`} className={`box  ${headClasses}`}>
+        <div key={`${lat}-${lon}`} className='box'>
           {/* Snake head */}
           <div className={`hidden ${isHead ? rotationClasses : ''}`}>
             <img className='image' src='/snake.svg' />
           </div>
           {/* Snake body */}
-          <div className={`hidden ${isInSnake && !isHead ? 'body' : ''}`}>
+          <div className={bodyClasses}>
             <div className='body-circle' />
           </div>
           {/* Lizard */}
-          <div className={`hidden ${isCurrentFood ? 'show-current-food' : ''}`}>
+          <div className={currentFoodClasses}>
             <img className='image' src='/lizard.svg' />
           </div>
-          {/* Look-ahead */}
-          <div className={`hidden ${isNextFood ? 'show-next-food' : ''}`}>
+          {/* Look-ahead hint */}
+          <div className={nextFoodClasses}>
             <div className='next-food flash'>#</div>
           </div>
           {/* Bonus */}
-          <div className={`hidden ${isBonus ? 'bonus' : ''}`}>
+          <div className={bonusClasses}>
             <img className='image' src='/bonus.svg' />
           </div>
           {/* Booby Trap */}
-          <div className={`hidden ${isBoobyTrap ? 'booby-trap' : ''}`}>
+          <div className={boobyTrapClasses}>
             <img className='image' src='/booby-trap.svg' />
           </div>
         </div>
