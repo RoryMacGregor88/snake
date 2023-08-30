@@ -20,7 +20,11 @@ const Grid = ({
   isInvincible,
   isPoisoned,
 }: Props) => (
-  <div className='grid'>
+  <div
+    className={`grid ${isInvincible ? 'grid-invincible' : ''} ${
+      isPoisoned ? 'grid-poisoned' : ''
+    }`}
+  >
     {boxes.map(([lat, lon]: Coords) => {
       const isInSnake = !!snakeCoords.find(
         ([matchLat, matchLon]) => matchLat === lat && matchLon === lon
@@ -43,17 +47,10 @@ const Grid = ({
       const isBonus = lat === bonusLat && lon === bonusLon,
         isBoobyTrap = lat === boobyTrapLat && lon === boobyTrapLon;
 
-      /** For snake */
-      // const invincibleClasses = `${isInvincible ? 'invincible' : ''}`;
-      // const poisonedClasses = `${isPoisoned ? 'poisoned' : ''}`;
-
       const rotationClasses = `${
-        DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'
-      } ${isInvincible ? 'invincible' : ''} ${isPoisoned ? 'poisoned' : ''}`;
-
-      const bodyClasses = `hidden ${isInSnake && !isHead ? 'body' : ''} ${
-        isInvincible ? 'invincible' : ''
-      } ${isPoisoned ? 'poisoned' : ''}`;
+          DIRECTION_KEYS[currentDirection] ?? 'ArrowUp'
+        }`,
+        bodyClasses = `hidden ${isInSnake && !isHead ? 'body' : ''}`;
 
       /** For various icons */
       const currentFoodClasses = `hidden ${
