@@ -80,14 +80,20 @@ const calculateNextCoords = ({
 interface CheckHasLostProps {
   prevCoords: Coords[];
   nextCoords: Coords;
+  isInvincible: boolean;
 }
 
-const checkHasLost = ({ prevCoords, nextCoords }: CheckHasLostProps) => {
-  const hasLost = !!prevCoords.find(([prevLat, prevLon]) => {
+const checkHasLost = ({
+  prevCoords,
+  nextCoords,
+  isInvincible,
+}: CheckHasLostProps) => {
+  const hasHitTail = !!prevCoords.find(([prevLat, prevLon]) => {
     const [lat, lon] = nextCoords;
     return prevLat === lat && prevLon === lon;
   });
 
+  const hasLost = !isInvincible && hasHitTail;
   return hasLost;
 };
 

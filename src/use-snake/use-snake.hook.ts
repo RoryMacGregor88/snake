@@ -13,6 +13,7 @@ import {
   EXTRAS_LIFESPAN,
   DATE_FORMAT,
   INITIAL_EXTRA_COORDS,
+  INVINCIBILITY_LIFESPAN,
 } from '../constants';
 
 import { Coords, LeaderboardScore, Food, Extras, ExtraType } from '../types';
@@ -43,11 +44,18 @@ interface Props {
 const useSnake = ({ boxes }: Props) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [hasLost, setHasLost] = useState(false);
+
   const [snakeCoords, setSnakeCoords] =
     useState<Coords[]>(INITIAL_SNAKE_COORDS);
+
   const [currentDirection, setCurrentDirection] = useState('');
   const [currentSpeed, setCurrentSpeed] = useState(INITIAL_SPEED);
+
   const [isMoving, setIsMoving] = useState(false);
+
+  const [isInvincible, setIsInvincible] = useState(false);
+  const [isPoisoned, setIsPoisoned] = useState(false);
+
   const [leaderboardScores, setLeaderboardScores] =
     useState<LeaderboardScore[]>(INITIAL_HIGH_SCORES);
 
@@ -145,7 +153,7 @@ const useSnake = ({ boxes }: Props) => {
     /** Cleanup, so that listener isn't added over and over */
     return () => window.removeEventListener('keydown', updateDirection);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [food, currentDirection]);
+  }, [food, currentDirection, isPoisoned]);
 
   const handleHasLost = () => {
     setHasLost(true);
@@ -210,7 +218,7 @@ const useSnake = ({ boxes }: Props) => {
   }
 
   const handleChecks = ({ prevCoords, nextCoords }: HandleChecksArgs) => {
-    const hasLost = checkHasLost({ prevCoords, nextCoords });
+    const hasLost = checkHasLost({ prevCoords, nextCoords, isInvincible });
     const isEatingFood = checkIsEatingFood({ nextCoords });
     const { isEatingBonus, isEatingBoobyTrap } = checkIsEatingExtra({
       nextCoords,
@@ -219,6 +227,23 @@ const useSnake = ({ boxes }: Props) => {
     // TODO: extract state to here instead (handleHasLost, handleIsEating, etc)
 
     return { hasLost, isEatingFood, isEatingBonus, isEatingBoobyTrap };
+  };
+
+  const handleIsPoisoned = () => {
+    /** Cannot be poisoned when invincible */
+    if (isInvincible) return;
+
+    setIsPoisoned(true);
+    // TODO: need to calculate based on speed
+    setTimeout(() => setIsPoisoned(false), 5000);
+  };
+
+  const handleIsInvincible = () => {
+    setIsInvincible(true);
+    setTimeout(
+      () => setIsInvincible(false),
+      currentSpeed * INVINCIBILITY_LIFESPAN
+    );
   };
 
   interface GetNextCoordsArgs {
@@ -238,11 +263,11 @@ const useSnake = ({ boxes }: Props) => {
     if (hasLost) handleHasLost();
 
     if (isEatingBonus) {
-      // invincibility
+      handleIsInvincible();
     }
 
     if (isEatingBoobyTrap) {
-      // can't change direction
+      handleIsPoisoned();
     }
 
     /** Reduce time between moves each time snake eats */
@@ -271,6 +296,11 @@ const useSnake = ({ boxes }: Props) => {
   const updateDirection = ({ key }: { key: string }) => {
     /** Prevent non-directional keys */
     if (!DIRECTION_KEYS[key]) return;
+
+    console.log('isPoisoned: ', isPoisoned);
+
+    /** Disable movement if snake has been poisoned */
+    if (isPoisoned) return;
 
     /** Prevent 180 degree turn */
     if (key === OPPOSITE_KEYS[currentDirection]) return;

@@ -12,6 +12,7 @@ export const EXTRA_TYPES: { [key: string]: ExtraType } = {
 };
 
 export const EXTRAS_LIFESPAN = 20;
+export const INVINCIBILITY_LIFESPAN = 30;
 
 export const DIRECTION_KEYS: { [key: string]: string } = {
   ArrowLeft: 'ArrowLeft',
