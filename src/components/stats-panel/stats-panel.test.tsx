@@ -12,13 +12,23 @@ describe('HighScoreForm', () => {
     render(<StatsPanel score={score} />);
 
     expect(
-      screen.getByRole('heading', { name: `Your Score: ${score}` })
+      screen.getByRole('heading', { name: `Score: ${score}` })
     ).toBeInTheDocument();
   });
 
-  it('should display current speed', () => {
+  it('should display current speed as integer if round number', () => {
     const currentSpeed = 500,
       formattedSpeed = 2;
+    render(<StatsPanel currentSpeed={currentSpeed} />);
+
+    expect(
+      screen.getByRole('heading', { name: `Speed: ${formattedSpeed} m/s` })
+    ).toBeInTheDocument();
+  });
+
+  it('should display current speed as decimal if float', () => {
+    const currentSpeed = 450,
+      formattedSpeed = 2.22;
     render(<StatsPanel currentSpeed={currentSpeed} />);
 
     expect(

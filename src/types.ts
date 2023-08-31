@@ -15,3 +15,8 @@ export interface LeaderboardScore {
   score: number;
   date: string;
 }
+
+export interface HandleChecksArgs {
+  prevCoords: Coords[];
+  nextCoords: Coords;
+}

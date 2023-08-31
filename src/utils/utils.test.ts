@@ -5,6 +5,9 @@ import {
   createGrid,
   checkHasLost,
   calculateNextCoords,
+  checkIsEatingExtra,
+  checkIsEatingFood,
+  getNextCoords,
 } from './utils';
 
 describe('utils', () => {

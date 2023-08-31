@@ -1,5 +1,5 @@
 import { MAX_GRID_SIZE, MIN_GRID_SIZE } from '../constants';
-import { Coords } from '../types';
+import { Coords, Extras, Food, HandleChecksArgs } from '../types';
 
 /**
  * Filters out all boxes currently occupied by snake or current
@@ -97,4 +97,80 @@ const checkHasLost = ({
   return hasLost;
 };
 
-export { getRandomNonSnakeBox, createGrid, calculateNextCoords, checkHasLost };
+interface CheckIsEatingExtraProps {
+  nextCoords: Coords;
+  extras: Extras;
+}
+
+const checkIsEatingExtra = ({
+  nextCoords,
+  extras,
+}: CheckIsEatingExtraProps) => {
+  const [lat, lon] = nextCoords;
+
+  const { bonus, boobyTrap } = extras;
+
+  const [bonusLat, bonusLon] = bonus;
+  const [boobyTrapLat, boobyTrapLon] = boobyTrap;
+
+  const isEatingBonus = bonusLat === lat && bonusLon === lon,
+    isEatingBoobyTrap = boobyTrapLat === lat && boobyTrapLon === lon;
+
+  return { isEatingBonus, isEatingBoobyTrap };
+};
+
+interface CheckIsEatingFoodArgs {
+  nextCoords: Coords;
+  food: Food;
+}
+
+const checkIsEatingFood = ({ nextCoords, food }: CheckIsEatingFoodArgs) => {
+  const [lat, lon] = nextCoords;
+
+  const { currentFood } = food;
+  const [foodLat, foodLon] = currentFood;
+
+  const isEating = foodLat === lat && foodLon === lon;
+  return isEating;
+};
+
+interface GetNextCoordsArgs {
+  prevCoords: Coords[];
+  key: string;
+  handleChecks: ({ prevCoords, nextCoords }: HandleChecksArgs) => {
+    isEatingFood: boolean;
+  };
+}
+
+const getNextCoords = ({
+  prevCoords,
+  key,
+  handleChecks,
+}: GetNextCoordsArgs) => {
+  const nextCoords = calculateNextCoords({
+    head: prevCoords[prevCoords.length - 1],
+    arrowKey: key,
+  });
+
+  const { isEatingFood } = handleChecks({ prevCoords, nextCoords });
+
+  /** If isEatingFood, add new coords as head (effectively increments tail length) */
+  if (isEatingFood) return [...prevCoords, nextCoords];
+
+  /**
+   * If not eating, filter first coord, replace head with new coords
+   * (effectively retains current tail length)
+   */
+  const filteredTail = prevCoords.filter((_, i) => i !== 0);
+  return [...filteredTail, nextCoords];
+};
+
+export {
+  getRandomNonSnakeBox,
+  createGrid,
+  calculateNextCoords,
+  checkHasLost,
+  checkIsEatingExtra,
+  checkIsEatingFood,
+  getNextCoords,
+};

@@ -25,9 +25,7 @@ const StatsPanel = ({
       <h1>Score: {score}</h1>
       {currentSpeed === MAX_SPEED ? (
         <div className='flash maximum-speed'>
-          <span>🔥</span>
           <h2>MAXIMUM SPEED</h2>
-          <span>🔥</span>
         </div>
       ) : (
         <h2>Speed: {formattedSpeed} m/s</h2>
