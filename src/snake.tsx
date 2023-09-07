@@ -33,8 +33,8 @@ function Snake() {
   return window.innerWidth >= MIN_SCREEN_SIZE ? (
     <div className='app-container'>
       <div className='header'>
-        <h1>React Snake!</h1>
-        <span>Watch out - he gets faster every time he eats!</span>
+        <h1>React Snake</h1>
+        <span>Watch out - he gets faster when he eats!</span>
       </div>
 
       <div className='grid-container'>
